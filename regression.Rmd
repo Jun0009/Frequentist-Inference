@@ -1,5 +1,5 @@
 ---
-title: "project2_zhang"
+title: "Regression"
 author: "Juntao Zhang"
 date: "22/03/2021"
 output:
