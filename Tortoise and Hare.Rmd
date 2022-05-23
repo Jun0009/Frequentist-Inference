@@ -3,9 +3,16 @@ title: "Tortoise and Hare"
 author: "Juntao Zhang"
 date: "10/03/2021"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
+header-includes:
+- \usepackage[utf8]{inputenc}
+- \usepackage{amsmath}
+- \usepackage{amsmath,bm}
+- \usepackage{mathtools}
+- \usepackage{xcolor}
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -24,9 +31,9 @@ After the famous fast tortoise and slow hare race, the team of 10 hares and the 
 
 We are interested in testing whether the true mean finishing time is the same for team tortoise and team hare.  
 
-Let x's be the finishing times of hares and y's be the finishing times of the tortoises. Our null hypothesis is $\overline{x}$ = $\overline{y}$ and the alternative hypothesis is $\overline{x} \neq \overline{y}$. \\
+Let x's be the finishing times of hares and y's be the finishing times of the tortoises. Our null hypothesis is $\overline{x}$ = $\overline{y}$ and the alternative hypothesis is $\overline{x} \neq \overline{y}$. 
 
-Using a one-sided alternative we can only test the effect size in one direction: $\overline{x}$ > or < $\overline{y}$. The effect is divided in two directions for the two-sided test. For the same size level, a one-sided alternative would have a larger power and larger size than the two-tailed test in one direction. \\
+Using a one-sided alternative we can only test the effect size in one direction: $\overline{x}$ > or < $\overline{y}$. The effect is divided in two directions for the two-sided test. For the same size level, a one-sided alternative would have a larger power and larger size than the two-tailed test in one direction. 
 
 
 ```{r load}
@@ -40,7 +47,7 @@ h-t
 
 ```
 
-The difference in sample mean is -5.05. \\
+The difference in sample mean is -5.05. 
 
 
 ### Same Variance Assumption
@@ -51,23 +58,22 @@ Let $N_1$ be the number of observations in group hare and $N2$ be the number of 
 
 We know that the pooled variance (the variance representing both the variance of team hare and team tortoise based on the weighted average of the variances of both teams) is:
 
-$$ 
-\begin{align}
- {S_p}^2= \frac{S^2_{hare}(N_1-1)+S^2_{tortoise}(N_2-1)}{N_1+N_2-2}
-\end{align}
-$$
+ ${S_p}^2= \frac{S^2_{hare}(N_1-1)+S^2_{tortoise}(N_2-1)}{N_1+N_2-2}$
+
+
 
 Then:
 
 $$ 
-\begin{align}
+\begin{aligned}
 Var\left(\bar{X_1} - \bar{X_2}\right) &= Var(\bar{X_1})+Var(\bar{X_2})-2Cov(\bar{X_1}\bar{X_2}) \\
                               &= Var(\bar{X_1})+Var(\bar{X_2})\\
                               &= \frac{{S_p}^2}{N_1} + \frac{{S_p}^2}{N_2}\\
                               &= {S_p}^2(\frac{1}{N_1}+\frac{1}{N_2})\\
                               &= \frac{S^2_{hare}(N_1-1)+S^2_{tortoise}(N_2-1)}{N_1+N_2-2}(\frac{1}{N_1}+\frac{1}{N_2})
-\end{align}
+\end{aligned}
 $$
+
 Since observations are independent, the means of the group are also independent. Thus the covariance of the means is zero. Due to assumption of equal variance of the two groups, the variance of means can be estimated using the pooled variance.
 
 
@@ -98,7 +104,7 @@ The degree of freedom is 18 and the t-statistic is -0.555 with a p-value of 0.59
 ```{r rejection}
 qt(p=0.05/2,df=18)
 ```
-At the level of 5% significance, the rejection region is {t>2.10} $\cup$ {t<-2.10}. So the t score of -0.555 is not in the rejection region. We can conclude that we do not reject the null hypothesis of $\overline{x}$ = $\overline{y}$. 
+At the level of 5% significance, the rejection region is {t>2.10} or {t<-2.10}. So the t score of -0.555 is not in the rejection region. We can conclude that we do not reject the null hypothesis of $\overline{x}$ = $\overline{y}$. 
 
 
 
@@ -154,8 +160,10 @@ We can conclude that the two sample t-test is not appropriate for this problem b
 If the two teams are about the same in finishing times, then we would expect the number of hares passing the number of tortoises to be roughly the same as the number of tortoise passing the number of hares. In probability terms, $P(X_{hare} < X_{tortoise}) = P(X_{tortoise} < X_{hare})$ should hold. Therefore, it is of interest to test the hypotheses:
 
 $$
+\begin{aligned}
 H0 :P(X_{hare} < X_{tortoise}) = P(X_{tortoise} < X_{hare}) \\  
-H1 :P(X_{hare} < X_{tortoise}) \neq P(X_{tortoise} < X_{hare})
+H1 :P(X_{hare} < X_{tortoise}) \neq P(X_{tortoise} < X_{hare}) 
+\end{aligned}
 $$
 
 ### U Statistic
@@ -163,8 +171,10 @@ $$
 The Mann-Whitney U-test may be used to test the above hypotheses. This test is based on calculating U-statistics that look at all pair-wise comparisons between members of the two teams and summarizes the total number of wins for one of the teams.
 
 $$
+\begin{aligned}
 U_{hare}=\sum_{i=1}^{n_1} \sum_{j=1}^{n_2}I(X_{hare,i}<X_{tortoise,j})  \\ 
-U_{tortoise}=\sum_{i=1}^{n_1} \sum_{j=1}^{n_2}I(X_{tortoise,j}<X_{hare,i})
+U_{tortoise}=\sum_{i=1}^{n_1} \sum_{j=1}^{n_2}I(X_{tortoise,j}<X_{hare,i}) 
+\end{aligned}
 $$
 
 ```{r U-statistic}
@@ -184,7 +194,7 @@ u_t
 
 ```
 
-So $U_{hare}$ = 81 and $U_{tortoise}$ = 19\\
+So $U_{hare}$ = 81 and $U_{tortoise}$ = 19
 
 ### Null Hypothesis of U Test
 
@@ -193,20 +203,20 @@ $P(X_{hare}<X_{tortoise})+P(X_{tortoise}<X_{hare}) =1$
 So,
 $P(X_{hare}<X_{tortoise})= P(X_{tortoise}<X_{hare}) =0.5$
 
-$$ 
-\begin{align}
-E\left[U_{hare}\right] &= E[\sum_{i}^{10} \sum_{j}^{10}I ] \\
-                              &= \sum_{i}^{10} \sum_{j}^{10} E[I]\\
+$$
+\begin{aligned}
+E(U_{hare}) &= E(\sum_{i}^{10} \sum_{j}^{10}I )\\
+                              &= \sum_{i}^{10} \sum_{j}^{10} E(I)\\
                               &= \sum_{i}^{10} \sum_{j}^{10} 0\cdot P(X_{hare,i}>X_{tortoise,j})+1\cdot P(X_{hare,i}<X_{tortoise,j})\\
                               &= \sum_{i}^{10} \sum_{j}^{10} P(X_{hare,i}<X_{tortoise,j})\\
                               &=100P(X_{hare}<X_{tortoise})\\
                               &= 100 \cdot 0.5 \\
-                              &=50 \\
-                              
-\end{align}
+                              &=50 
+\end{aligned}
 $$
+
 Similarly,
-$E[U_{tortoise}] = 100 P(X_{tortoise}<X_{hare}) =50$ 
+$E(U_{tortoise}) = 100 P(X_{tortoise}<X_{hare}) =50$ 
 
 The expected value for U-statistic of both groups is 50.
 
@@ -228,8 +238,8 @@ z_t
 
 ```
 
-For hare, the z-statistic is 2.34 and the p-value is 0.019. \\
-For tortoise, the z-statistic is -2.34 and the p-value is 0.019. \\
+For hare, the z-statistic is 2.34 and the p-value is 0.019. 
+For tortoise, the z-statistic is -2.34 and the p-value is 0.019. 
 
 At a 0.05 significance level, the null hypothesis is rejected. So there is a difference between the two teams in terms of finishing time.
 
@@ -327,27 +337,25 @@ wst<-sapply(d,w_t)
 
 ```
 
-```{r histogram1}
+```{r histogram1,fig.width = 10,fig.height = 4 }
 #create histograms for the statistics calculated
 #add vertical line for p-value calculation 
 #calculate p-value for each statistic
-
+par(mfrow=c(1,2))
 #difference of mean
 hist(dm,main="Histogram of difference in group mean",xlab="Difference in group mean")
 abline(v=h-t,col="blue")
 
-
-```
-
-
-```{r histogram2}
 #t-statistic
 hist(dt,main="Histogram of t-statistic",xlab="t-statistic")
 abline(v=t_sta,col="blue")
+
 ```
 
-```{r histogram3}
+
+```{r histogram3,fig.width = 10,fig.height = 4 }
 #u-statistic
+par(mfrow=c(1,2))
 #for team hare:
 hist(ush,main="Histogram of u-statistic(hare)",xlab="u-statistic")
 abline(v=u_h,col="blue")
@@ -356,8 +364,9 @@ hist(ust,main="Histogram of u-statistic(tortoise)",xlab="u-statistic")
 abline(v=u_t,col="blue")
 ```
 
-```{r histogram4}
+```{r histogram4,fig.width = 10,fig.height = 4 }
 #z-statistic
+par(mfrow=c(1,2))
 #for team hare:
 hist(zsh,main="Histogram of z-statistic(hare)",xlab="z-statistic")
 abline(v=z_h,col="blue")
@@ -366,9 +375,9 @@ hist(zsh,main="Histogram of z-statistic(tortoise)",xlab="z-statistic")
 abline(v=z_t,col="blue")
 ```
 
-```{r histogram5}
+```{r histogram5, fig.width = 10,fig.height = 4 }
 #wilcox's rank sum statistic
-
+par(mfrow=c(1,2))
 #for team hare:
 hist(wsh,main="Histogram of W-statistic(hare)",xlab="w-statistic")
 abline(v=wh,col="blue")
@@ -377,12 +386,13 @@ hist(wst,main="Histogram of W-statistic(tortoise)",xlab="w-statistic")
 abline(v=wt,col="blue")
 ```
 
-The distributions of the statistics calculated are the same as sampling distribution under the null hypothesis. Under null hypothesis, the two groups are the same in terms of finishing time. There is no significant difference between the two groups, so it does not matter how we label the data points. Thus the sampling distributions of statistics of the permuted datasets should show the same distribution as the sampling distribution under the null hypothesis. \\
+The distributions of the statistics calculated are the same as sampling distribution under the null hypothesis. Under null hypothesis, the two groups are the same in terms of finishing time. There is no significant difference between the two groups, so it does not matter how we label the data points. Thus the sampling distributions of statistics of the permuted datasets should show the same distribution as the sampling distribution under the null hypothesis. 
 
 
-All histograms are roughly symmetric. The difference in mean and the t-statistic histograms have similar shape, but they do not show a t-distribution shape. The u,z,and w-statistics histograms have a bell shape. \\
+All histograms are roughly symmetric. The difference in mean and the t-statistic histograms have similar shape, but they do not show a t-distribution shape. The u,z,and w-statistics histograms have a bell shape. 
 
-I expected the mean value of difference in mean,t-statistic and z-statistic to be 0. The mean value of u-statistic and w-statistic to be 50. The mean value of these statistics should be the same as what the null hypothesis suggested. \\
+
+I expected the mean value of difference in mean,t-statistic and z-statistic to be 0. The mean value of u-statistic and w-statistic to be 50. The mean value of these statistics should be the same as what the null hypothesis suggested. 
 
 The p-values can be calculated by using the observed statistics from the original race data set and applying the central limited theorem (since we have 3000 samples for each statistic). The vertical lines added to the plot are the values of the observed data.
 
@@ -406,22 +416,23 @@ The p-values can be calculated by using the observed statistics from the origina
 2*pnorm(-abs((wt-mean(wst))/sd(wst)))
 
 ```
-From the p-values calculated, results are similar to the results from the previous tests. The difference in mean and t-statistic do not reject the null hypothesis. The U-statistic, Z-statistic and W-statistic reject the null hypothesis. \\
+
+From the p-values calculated, results are similar to the results from the previous tests. The difference in mean and t-statistic do not reject the null hypothesis. The U-statistic, Z-statistic and W-statistic reject the null hypothesis. 
 
 
 ## Summary
 
-Under the same null hypothesis of hare and tortoise having the same mean finishing time of the race, the two sample t-test and the Mann-Whitney test yield different results. The two sample t-test does not reject the null hypothesis and the Mann-Whitney test reject the null hypothesis. \\
+Under the same null hypothesis of hare and tortoise having the same mean finishing time of the race, the two sample t-test and the Mann-Whitney test yield different results. The two sample t-test does not reject the null hypothesis and the Mann-Whitney test reject the null hypothesis. 
 
-However, there are several underlying assumptions for the two sample t-test. It requires the two groups of data points be drawn independently from  normal distributions with the same variance. After testing for the assumptions, both Hare and Tortoise finishing times have the variance but are not normally distributed. Since the normality assumption is not satisfied, the test results are not validated. \\
+However, there are several underlying assumptions for the two sample t-test. It requires the two groups of data points be drawn independently from  normal distributions with the same variance. After testing for the assumptions, both Hare and Tortoise finishing times have the variance but are not normally distributed. Since the normality assumption is not satisfied, the test results are not validated. 
 
-The Mann-Whitney test, on the other hand, does not assume the data follow any particular distribution(Rice,435). It is a non-parametric method. The calculated u-statistics and the Wilcoxon test in R yield the same results. They both reject the null hypothesis that hares and tortoises are the same in terms of finishing time. The result is more reliable than the two sample t-test because this method does not depend on an assumption of normality.\\
+The Mann-Whitney test, on the other hand, does not assume the data follow any particular distribution(Rice,435). It is a non-parametric method. The calculated u-statistics and the Wilcoxon test in R yield the same results. They both reject the null hypothesis that hares and tortoises are the same in terms of finishing time. The result is more reliable than the two sample t-test because this method does not depend on an assumption of normality.
 
-The randomization based tests yield the same results as the previous tests. The difference in mean statistics and the t statistic still shows no significant evidence for the alternative hypothesis. The U statistics, Z statistics and W statistics shows significant evidence for the alternative hypothesis. \\
+The randomization based tests yield the same results as the previous tests. The difference in mean statistics and the t statistic still shows no significant evidence for the alternative hypothesis. The U statistics, Z statistics and W statistics shows significant evidence for the alternative hypothesis. 
 
-When the sample size is relatively small and there is no prior knowledge on the distribution of the observations, choosing the Mann-Whitney test is safer. However, the Mann-Whitney test is not sensitive to outliers since the actual values of the observations are replaced by their ranks (Rice,439). When the assumptions of the two-sample t tests are confirmed and the sample size is relatively larger,the two sample t tests are more powerful.  \\
+When the sample size is relatively small and there is no prior knowledge on the distribution of the observations, choosing the Mann-Whitney test is safer. However, the Mann-Whitney test is not sensitive to outliers since the actual values of the observations are replaced by their ranks (Rice,439). When the assumptions of the two-sample t tests are confirmed and the sample size is relatively larger,the two sample t tests are more powerful.  
 
-The final conclusion of the hypothesis test is that the finishing time of hares and tortoises is different.  \\
+The final conclusion of the hypothesis test is that the finishing time of hares and tortoises is different.  
 
 
 
