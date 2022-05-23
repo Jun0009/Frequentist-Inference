@@ -1,0 +1,471 @@
+---
+title: "project2_zhang"
+author: "Juntao Zhang"
+date: "22/03/2021"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE,tidy=TRUE)
+```
+
+
+##Regression Project 
+
+```{r load}
+#read data
+data <-read.csv("C:/Users/joann/OneDrive/Desktop/frequenist inference/BGS.csv")
+
+```
+
+**Part 1**
+
+Question 1: Model height growth from age 2 to age 9
+
+```{r scatter plot}
+#create scatter plot 
+library(ggplot2)
+ggplot(data, aes(x = HT2, y =HT9,color=factor(Sex))) +
+    geom_point()+ggtitle("Height at Age 9 VS. Age 2") +xlab("Height at Age 2")+ylab("Height at Age 9")+scale_color_manual(labels=c("Male", "Female"), values=c("red","blue"))+labs(color="Sex")
+
+
+```
+From the scatter plot, boys and girls have the same pattern of height growth. 
+
+
+```{r simple linear regression}
+#fit a simple linear regression of heights at age 9 and heights at age 2 
+reg1 = lm(HT9~HT2, data)
+summary(reg1)
+
+```
+When fitting a simple linear regression of heights at age 9 on heights at age 2, the estimated intercept is 31.927.The intercept of this regression corresponds to the mean height at age 9 for those whose height at age 2 is 0. The estimated coefficient of HT2 is 1.1796. For two groups of people whose average height at age 2 differs by 1 cm, we expect the taller group's height at age 9 to be 1.1796 cm higher on average.
+
+Testing the hypothesis $H_0:\beta_1 =0$, the output shows that the p-value is <0.05, so we reject the hypothesis. So the coefficient is statistically significant.
+
+The T-statistic of $H_0$ is 12.052 and the F-statistic for the regression model is 145.2. Since $12.052^2 = 145.2$, the T-statistic is equal to the square root of F-statistic.
+
+```{r diagnostic plots for model 1}
+#plot the diagnostic plots to check for assumptions
+plot(reg1,which=1:2)
+
+```
+The first plot is a residual plot. From this plot, we see that there is no distinctive pattern of residuals VS. fitted values. So the residuals are homoscedastic. The second plot is a normal QQ plot of the standardized residuals. The residuals aligns with the dash line (quantiles of the standard normal distribution) mostly. Thus, most of the residuals are normally distributed.
+
+
+```{r separate intercept for boys and girls}
+reg1_a = lm(HT9~HT2+factor(Sex), data)
+summary(reg1_a)
+
+```
+
+When considering a model that allows for separate intercepts for boys and girls, we add a binary variable for sex. When sex = 0/male, the intercept is 30.40,and when sex =1/female, the intercept is 30.96. However,the binary variable is not statistically significant in the model and the adjusted R-square value is slightly lower than the simple linear regression model (0.5166>0.5156). The simple linear regression is a better fit than the model that allows for separate intercepts for different sex group.
+
+```{r separate intercept and coefficients for boys and girls}
+reg1_b = lm(HT9~HT2*factor(Sex), data)
+summary(reg1_b)
+
+```
+When considering a model that allows for separate intercepts and coefficients for boys and girls, we use an interaction model. When the binary Sex variable =0/male, the intercept is 35.17 and the coefficient is 1.14. When sex = 1/female, the intercept is 26.55 and the coefficient is 1.24. However, the binary variable and the interaction term are both not statistically significant. The adjusted R-squared of the model is slightly smaller than the simple linear regression model (0.5166>0.5129). So the simple linear model is a better fit.
+
+
+Question 2: Model height growth from age 9 to age 18
+
+```{r scatter plot 2}
+#generate scatter plot for heights at age 18 vs heights at age 9
+library(ggplot2)
+ggplot(data, aes(x = HT9, y =HT18,color=factor(Sex))) +
+    geom_point()+ggtitle("Height at Age 18 VS. Age 9") +xlab("Height at Age 9")+ylab("Height at Age 18")+scale_color_manual(labels=c("Male", "Female"), values=c("red","blue"))+labs(color="Sex")
+
+```
+From the scatter plot, we can see the male group and the female group are separated. In general, the two groups have a similar pattern but the male group is above the female group (i.e. larger height growth). 
+
+
+```{r simple linear regression 2}
+#generate a simple linear regression
+reg2 = lm(HT18~HT9, data)
+summary(reg2)
+
+```
+The estimated intercept is 32.34 and the estimated coefficient of HT9 is 1.035.
+
+
+```{r separate intercept for boys and girls 2}
+reg2_a = lm(HT18~HT9+factor(Sex), data)
+summary(reg2_a)
+
+```
+
+When considering a model that allows for separate intercepts for boys and girls, the binary sex variable is statistically significant and the adjusted R-squared value of the model is larger than the simple linear regression model (0.4094 < 0.8494). This model fits better than the simple linear regression model.
+
+```{r separate intercept and coefficients for boys and girls 2}
+reg2_b = lm(HT18~HT9*factor(Sex), data)
+summary(reg2_b)
+
+```
+When considering a model that allows for separate intercepts and coefficients for boys and girls, the adjusted R-squared value is higher than the simple linear regression model (0.4094<0.8516). The model is a better fit than the simple linear regression model.
+
+
+From the above 3 models, I think the one that allows for different intercepts and coefficients for boys and girls best describes the data due to its largest adjusted R-squared value. The estimated intercept is 35.08, and it represents the mean height at age 18 for males whose height at age 9 is 0. The estimated coefficient of HT9 is 1.059. It means for two groups of males whose average height at age 9 differs by 1 cm, we expect the taller group's height at age 18 to be 1.059 cm higher on average. The estimated coefficient of the sex variable is 13.33, and it means that the mean height at age 18 for females is 13.33 cm higher than the males' mean height at age 18 when both groups have the height of 0 at age 9.  The estimated coefficient of the interaction term is -0.185. So the coefficient of H9 for female would be 1.059-0.185 = 0.874. It means for two groups of females whose average height at age 9 differs by 1 cm, we expect the taller group's height at age 18 to be 0.874 cm higher on average. It can also be interpreted as for those whose heights at age 9 is 1 cm taller, the increment of their heights at age 18 would be 0.185 cm smaller for the female group than the male group on average. 
+
+
+Question 3
+
+```{r new dataset for boys} 
+#create a new dataset with only boys
+d_boys = data[data$Sex==0,]
+
+```
+
+```{r fit model on new dataset} 
+#fit linear regression model of weight at age 18 on weight at age 9
+M1 <- lm(WT18~WT9,d_boys)
+summary(M1)
+
+```
+
+
+```{r fit model on new dataset 2} 
+#fit linear regression model of weight at age 18 on weight at age 9 and leg circumference at age 9
+M2 <- lm(WT18~WT9+LG9,d_boys)
+summary(M2)
+
+```
+```{r correlation coefficients} 
+#find the correlation coefficients for WT9,WT18 and LG9
+cor(d_boys[c("WT9","WT18","LG9")])
+
+```
+
+From the above two linear regression models, we see that weight at age 9 is significant in the first one but not significant in the second one. This is because the correlation coefficients for WT9 and LG9 is 0.94. Weight at age 9 has strong association with leg circumference at age 9. When including both variables in the model, they become insignificant due to their high correlation.
+
+
+The definition of the hat matrix is:\
+ $\hat{\beta}=Hy$ \
+ $\hat{y}=X\hat{\beta} =: Hy$ \
+where $\hat{\beta}$ is the OLS estimator, X is the matrix of covariates and  $\hat{y}$ is the predicted y values.\
+The H matrix puts the hat on y ($\hat{y}=Hy$), so it is called the hat matrix. 
+
+```{r hat matrix}
+#create the design matrix for the linear regression model of weight at age 18 on weight at age 9
+one<-rep(1,66)
+X=matrix(c(one,d_boys$WT9),66,2)
+#generate hat matrix base on the equation
+H = X%*% solve(t(X)%*%X) %*%t(X)
+#show the diagonal of the hat matrix 
+diag(H)
+
+```
+The above shows the diagonal of the hat matrix, which is the leverage of the points. There is one point that has the leverage value of 0.516 and it is much higher than the other points' leverage value.
+
+
+```{r regression model without the high leverage point}
+#find the row number of the high leverage point
+h = which(grepl(max(diag(H)), diag(H)))
+#fit model without the high leverage point
+d_boys_new <- d_boys[-h,]
+M3 <- lm(WT18~WT9,d_boys_new)
+summary(M3)
+```
+```{r summary of M1}
+#M1 is the model fitted with all data points generated for question 3(a)
+summary(M1)
+```
+For the model fitted for all data points, the coefficient on the weight at age 9 is 1.048. For the model fitted without the high leverage point, the coefficient on the weight at age 9 is 1.667. There is a 59% percent change on the coefficient. 
+
+```{r scatter plot of WT18 and WT9}
+#generate scatter plot for weights at age 18 vs Weights at age 9
+library(ggplot2)
+ggplot(d_boys, aes(x = WT9, y =WT18)) +
+    geom_point()+ggtitle("Weights at Age 18 VS. Weights at Age 9") +xlab("Weight at Age 9")+ylab("Weight at Age 18")+geom_abline(slope = coef(M3)[[2]], intercept = coef(M3)[[1]],col='red')+geom_abline(slope = coef(M1)[[2]], intercept = coef(M1)[[1]],col='blue')
+
+```
+The blue line represents the regression fitted on all data points. The red line represents the regression line fitted without the high leverage point.
+
+From the above parts, the regression line fitted without the high leverage point fits the data better. The estimated intercept for this model is 18.2029. It represents the average weight in kg at age 18 for males whose weight at age 9 is 0. The estimated coefficient of WT9 is 1.667. It means for two groups of males whose average weight at age 9 differs by 1 kg, we expect the heavier group's weight at age 18 to be 1.667 kg greater on average. 
+
+
+Question 4
+
+```{r new dataset for girls} 
+#create a new dataset with only girls
+d_girls = data[data$Sex==1,]
+
+```
+
+
+```{r plot Soma vs WT2}
+library(ggplot2)
+ggplot(d_girls, aes(x = WT2, y =Soma)) +
+    geom_point()+ggtitle("Somatotype VS. Weights at Age 2 for Girls") +xlab("Weight at Age 2")+ylab("Somatotype")
+
+ggplot(d_girls, aes(x = WT9, y =Soma)) +
+    geom_point()+ggtitle("Somatotype VS. Weights at Age 9 for Girls") +xlab("Weight at Age 9")+ylab("Somatotype")
+
+
+ggplot(d_girls, aes(x = WT18, y =Soma)) +geom_point()+ggtitle("Somatotype VS. Weights at Age 18 for Girls") +xlab("Weight at Age 18")+ylab("Somatotype")
+
+```
+The relationship between weight and somatotype has no clear pattern at the age of 2 and shows a positively correlated trend at the age of 9. At the age of 18, the trend is more obvious and implying a stronger positive correlation between the two variables.
+
+```{r new variables}
+#create new variables
+d_girls$DW9 = d_girls$WT9 - d_girls$WT2
+d_girls$DW18 = d_girls$WT18 - d_girls$WT9
+d_girls$AVE = (d_girls$WT18+d_girls$WT9 +d_girls$WT2)/3
+d_girls$LIN = d_girls$WT18 - d_girls$WT2
+d_girls$QUAD = d_girls$WT2 - 2*d_girls$WT9+d_girls$WT18
+
+```
+
+```{r fit three models}
+#fit three models
+m1 <- lm(Soma~WT2+WT9+WT18,d_girls)
+m2 <- lm(Soma~WT2+DW9+DW18,d_girls)
+m3 <- lm(Soma~AVE+LIN+QUAD,d_girls)
+summary(m1)
+summary(m2)
+summary(m3)
+```
+
+Similarities of the three models:\
+R-squared values,F-stastics, residuals and intercepts are the same for all three models. They produce the same predicted value for somatotype.
+
+
+Differences of the three models:\
+Since models regress on different variables, the coefficients and the significance of the variables are not the same in general.
+
+
+The coefficient for DW18 in model 2 equals the coefficient for WT18 in model 1, but the coefficient for DW9 in model 2 does not equal the coefficient for WT9 in model 1. This is because DW18 = WT18-WT9 and DW9=WT9-WT2. \
+$\beta_{DW18} = \beta_{WT18}$ \
+$\beta_{DW18}DW18 = \beta_{DW18}WT18 -\beta_{DW18}WT9 $\
+$\beta_{DW18}DW18 = \beta_{WT18}WT18 -\beta_{DW18}WT9 $
+
+$\beta_{DW9}DW9 = \beta_{DW9}WT9 -\beta_{DW9}WT2 $
+
+Taking DW18 and DW9 out of model 2: \
+$\beta_{DW18}DW18 +\beta_{DW9}DW9 =\beta_{WT18}WT18 -\beta_{DW18}WT9 +\beta_{DW9}WT9 -\beta_{DW9}WT2 $\
+
+Only looking at the coefficient for WT9:\
+$\beta_{WT9}WT9 = \beta_{DW9}WT9 -\beta_{DW18}WT9$ \
+So, $\beta_{WT9}= \beta_{DW9} -\beta_{DW18}$
+
+We can also see that WT2 in both model has different coefficients. 
+
+M1 and M3 are equivalent,and we can show it algebraically.
+
+Let a,b,c be the coefficients for AVE, LIN and QUAD, respectively.\
+$a\cdot AVE + b\cdot LIN + c\cdot QUAD$ = \
+$(\frac{a}{3}-b+c)WT2+(\frac{a}{3}-2c)WT9+(\frac{a}{3}+b+c)WT18$
+
+Let w1, w2, w3 be the coefficients of WT2,WT9 and WT18 respectively.
+By solving for a,b, c in terms of w1,w2,w3, we can show that coefficients of model 3 can be obtained from the coefficients of model 1.\
+Now that we know:\
+w1 = $\frac{a}{3}-b+c$, w2= $\frac{a}{3}-2c$, w3= $\frac{a}{3}+b+c$\
+
+
+After some manipulation, we get:\
+a =$w1-w2+w3$\
+b =$\frac{1}{2}(w3-w1)$\
+c =$\frac{1}{6}(w1+w3)-\frac{1}{3}w2$ 
+
+
+```{r fit 4d model }
+#fit model
+m4 <- lm(Soma~WT2+WT9+WT18+DW9,d_girls)
+summary(m4)
+
+```
+The coefficient of DW9 is neglected. DW9 = WT9-WT2. Both WT2 and WT9 are already included in the model. Adding the term DW9 is just adding a linear combination of WT2 and WT9 and it would be a redundant estimation. Therefore the coefficient for DW9 is not estimated.
+
+
+
+**Part 2:Reproduce Output**
+
+```{r load2}
+#read data
+prostate <-read.csv("C:/Users/joann/OneDrive/Desktop/frequenist inference/Prostate.csv")
+
+```
+
+Interpretation of the regression output:\
+Intercept of 0.669 means the average value of log of PSA is 0.669 when all other covariates (lcavol, lweight,age,lbph,svi, lcp,gleason and pgg45) are 0. \
+
+The estimated coefficient for lcavol means that when the cancer volume of two groups of people differs by 1%, the expected PSA of the group with the higher cancer volume will be 0.59% higher, if all other covariates are held fixed. (Calculated by $1.01^{0.587}-1$)\
+More directly, when lcavol of two groups of people differs by 1 unit, the expected lPSA will be 0.587 higher for the group with the higher lcavol,if all other covariates are held fixed.
+
+The estimated coefficient for lweight means that for two groups of people whose prostate weight differs by 1%, the expected PSA of the group with the higher prostate weight will be 0.453% higher, if all other covariates are held fixed.
+
+The estimated coefficient for age means that for two groups of people whose age differs by 1, the expected PSA of the elder group will be 1.94% lower, if all other covariates are held fixed.
+
+The estimated coefficient for lbph means that for two groups of people whose benign prostatic hyperplasia amount differs by 1%, the expected PSA of the group with the higher amount will be 0.1066% higher, if all other covariates are held fixed.
+
+The estimated coefficient for svi means that the expected PSA of the group of people who have seminal vesicle invasion will be 1.15 higher than the group of people who do not, if all other covariates are held fixed.
+
+The estimated coefficient for lcp means for two groups of people whose capsular penetration differs by 1%, the expected PSA of the group with the greater penetration will be 0.105% lower, if all other covariates are held fixed.
+
+The estimated coefficient for gleason means that for two groups of people whose gleason score differs by 1, the expected PSA of the group with the higher score will be 4.62% higher, if all other covariates are held fixed.
+
+The estimated coefficient for pgg45 means that for two groups of people whose percentage Gleason scores 4 or 5 differs by 1, the expected PSA of the group with the higher percentage will be 0.45% higher, if all other covariates are held fixed.
+
+```{r reproduce }
+#design matrix
+intercept<-rep(1,97)
+X=matrix(c(intercept,prostate$lcavol,prostate$lweight,prostate$age,prostate$lbph,prostate$svi,prostate$lcp,prostate$gleason,prostate$pgg45),97,9) 
+#Y matrix
+Y = matrix(prostate$lpsa,97,1)
+#Estimated parameters
+B = solve(t(X)%*%X)%*%t(X)%*%Y
+estimate = format(round(c(B), 5), nsmall = 5)
+#fitted values
+Y_hat = X%*%B
+#residuals
+e = Y-Y_hat
+
+#degree of freedom
+#97-(8+1) = 88
+#standard errors
+var = as.numeric((t(e)%*%e)/c(88))*diag(solve(t(X)%*%X))
+se = var^0.5
+std_error = format(round(var^0.5, 5), nsmall = 5)
+#t-values
+t = B/se
+t_values= format(round(c(t), 5), nsmall = 5)
+#p-values
+p = 2*pt(t,df=88, lower.tail=F)
+p_values= format(round(c(p), 5), nsmall = 5)
+
+#result table
+
+names<-c("intercept","lcavol","lweight","age","lbph","svi","lcp","gleason","pgg45")
+cbind(names,estimate,std_error,t_values,p_values)
+
+```
+
+```{r reproduce 2}
+#residual statistics
+summary(e)
+
+#degree of freedom
+df = 88
+
+#residual standard error
+r_sd =(var(e)*96/88)^0.5
+
+#multiple R-squared
+r = 1-var(e)/var(Y)
+
+#adjusted R-squared
+r_adj = 1-r_sd^2/var(Y)
+#f statistic
+f = (r/8)/((1-r)/88)
+
+#p-value for f test
+p_f = pf(f,8,88,lower.tail = F)
+
+names2 = c("df","residual sd","multiple R-squared","Adjusted R-squared","f-statistic","p-value")
+results = format(round(c(df,r_sd,r,r_adj,f,p_f), 5), nsmall = 5)
+cbind(names2,results)
+
+```
+```{r residual plot}
+plot(Y_hat,e,main="Residuals Vs.Fitted values",xlab="fitted values", ylab="residuals")
+abline(0,0)
+```
+
+```{r QQ plot}
+qqnorm(e)
+qqline(e)
+```
+
+From the residual plot, there is no pattern in the residuals. So the homoscedasticity assumption is satisfied for the model. The QQ plot shows that the distribution of the residuals has a bell shape but with lighter tails than the normal distribution. 
+
+
+
+**Part 3:Model Selection Simulation Study**
+
+```{r simulation}
+#generate x1 and x2 with standard normal distribution
+x1 = rnorm(1000)
+x2=rnorm(1000)
+
+#generate x3 correlated with x1 at p = 0.5
+x3 = 0.5*x1/sd(x1)+(1-0.5^2)^0.5*rnorm(1000)
+#generate x4 correlated with x2 at p = 0.7
+x4 = 0.7*x2/sd(x2)+(1-0.7^2)^0.5*rnorm(1000)
+
+library(MASS)
+sigma = c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1)
+n=c(100,500,1000)
+true <- data.frame (matrix (ncol = 10, nrow = 1000))
+
+for (i in 1:10){
+    d=list()
+    for(j in 1:1000){
+        Y=4+3*x1-0.1*x2+rnorm(1,mean=0,sd=sigma[i])
+        d[[(j)]] = stepAIC(lm(Y~x1+x2+x3+x4),trace=0)$call 
+     true[j,i] = sum(d==c("lm(formula = Y ~ x1 + x2)"))
+    }
+    
+}     
+  
+
+```
+
+
+```{r simulation}
+#generate x1 and x2 with standard normal distribution
+x1 = rnorm(1000)
+x2=rnorm(1000)
+
+#generate x3 correlated with x1 at p = 0.5
+x3 = 0.5*x1/sd(x1)+(1-0.5^2)^0.5*rnorm(1000)
+#generate x4 correlated with x2 at p = 0.7
+x4 = 0.7*x2/sd(x2)+(1-0.7^2)^0.5*rnorm(1000)
+
+library(MASS)
+sigma = c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1)
+n=c(100,500,1000)
+true <- data.frame (matrix (ncol = 10, nrow = 3))
+
+for (i in 1:10){
+    d=list()
+    for (v in 1:3){
+        for(j in 1:1000){
+            Y=4+3*x1[1:n[v]]-0.1*x2[1:n[v]]+rnorm(n[v],mean=0,sd=sigma[i])
+            x1=x1[1:n[v]]
+            x2=x2[1:n[v]]
+            x3=x3[1:n[v]]
+            x4 =x4[1:n[v]]
+            d[[(j)]] = stepAIC(lm(Y~x1+x2+x3+x4),trace=0)$call 
+            true[v,i]= sum(d==c("lm(formula = Y ~ x1 + x2)"))
+        }
+    }    
+    
+}     
+  
+
+```
+
+
+
+```{r simulation plot}
+n_100 = true[1,]/1000
+n_500 = true[2,]/1000
+n_1000 =true[3,]/1000
+
+plot(sigma, n_100, type="o", col="blue", pch="o", ylab="y", lty=1)
+lines(sigma, n_500, col="red",lty=2)
+lines(sigma, n_1000, col="dark red", lty=3)
+legend(0.1,0.3,legend=c("100","500","1000"), col=c("blue","red","black"),
+                                   pch=c("o","*","+"),lty=c(1,2,3), ncol=1)
+```
+
+From the plot, we can see that in general, the correctness of stepAIC function decreases as the standard error of the residuals increases. For large standard error of the residuals, the lower the number of iteration, the lower the correctness. When the number of iteration is large enough, 1000 in this case, the accuracy is not impacted by the standard error of residuals much. For small standard error of the residuals, the correctness of selecting the true model does not differ much of large n or small n. In conclusion, the stepwise model selection model has high accuracy when the standard error of residuals are small even though the number of iteration is not very large. When n is sufficiently large, it works well regardless of the size of the standard error of the residuals.
+
+
+
+
+
