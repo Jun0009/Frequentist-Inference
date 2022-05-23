@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo=TRUE,tidy=TRUE)
 
 ```{r load}
 #read data
-data <-read.csv("C:/Users/joann/OneDrive/Desktop/frequenist inference/BGS.csv")
+data <-read.csv("BGS.csv")
 
 ```
 
